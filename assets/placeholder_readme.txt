@@ -11,8 +11,9 @@ Untuk memasukkan aset buatan Anda sendiri ke dalam game ini, letakkan file aset 
 2. PIJAKAN (Platform Image):
    - assets/platform.png        -> Batang kayu, daun teratai, atau batu.
 
-3. KOIN (Collectible Image):
-   - assets/coin.png            -> Gambar koin emas.
+3. ITEM KOIN & JAM WAKTU (Collectibles):
+   - assets/coin.png            -> Gambar koin emas (Poin).
+   - assets/time.png            -> Gambar jam cyan (Booster Waktu +8s).
 
 4. LATAR BELAKANG (Parallax Scenery):
    - assets/bg_sky.png          -> Langit latar belakang.

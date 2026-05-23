@@ -170,6 +170,7 @@ class AssetLoader {
       character_drown:'assets/character_drown.png',
       platform:       'assets/platform.png',
       coin:           'assets/coin.png',
+      time:           'assets/time.png',
       bg_sky:         'assets/bg_sky.png',
       bg_hills:       'assets/bg_hills.png'
     };
@@ -657,6 +658,13 @@ class WaterHopGame {
 
   _drawPlatform(p) {
     const ctx = this.ctx;
+    const img = assets.get('platform');
+    if (img) {
+      const top = this.GROUND - this.PLAT_H;
+      ctx.drawImage(img, p.x - p.width / 2, top, p.width, this.PLAT_H);
+      return;
+    }
+
     const top = this.GROUND - this.PLAT_H;
     const centerY = top + this.PLAT_H / 2;
     const rx = p.width / 2;
@@ -711,6 +719,15 @@ class WaterHopGame {
     const spin = Math.abs(Math.cos(this.time * 4.5 + c.pulse));
 
     if (c.type === 'time') {
+      const img = assets.get('time');
+      if (img) {
+        // Draw image with spin animation scale
+        ctx.scale(spin, 1);
+        ctx.drawImage(img, -15, -15, 30, 30);
+        ctx.restore();
+        return;
+      }
+
       // ── Cyan Time Booster (Clock) ──
       // Glow
       const glow = ctx.createRadialGradient(0,0,1,0,0,22);
@@ -743,6 +760,15 @@ class WaterHopGame {
       ctx.beginPath(); ctx.arc(9*spin, -9, 3, 0, Math.PI*2); ctx.fill();
 
     } else {
+      const img = assets.get('coin');
+      if (img) {
+        // Draw image with spin animation scale
+        ctx.scale(spin, 1);
+        ctx.drawImage(img, -14, -14, 28, 28);
+        ctx.restore();
+        return;
+      }
+
       // ── Gold Coin ──
       // Glow
       const glow = ctx.createRadialGradient(0,0,1,0,0,20);
@@ -785,54 +811,143 @@ class WaterHopGame {
       const r = this.player.radius + 6;
       ctx.drawImage(spr, -r, -r, r*2, r*2);
     } else {
-      // ── Cute pink monster with glass bubble helmet ──
+      // ── Cute Orange Cat Character ──
       const R = this.player.radius;
+      const isJump = this.state === 'JUMPING' && this.player.vy < 0;
+      const isFall = this.state === 'JUMPING' && this.player.vy >= 0;
+      const isDrown = this.state === 'DROWNING';
 
       // Shadow
       ctx.save(); ctx.rotate(-this.player.rot);
       ctx.fillStyle = 'rgba(0,0,0,0.12)';
-      ctx.beginPath(); ctx.ellipse(0, R+2, R*.8, 5, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0, R+4, R*.7, 4, 0, 0, Math.PI*2); ctx.fill();
       ctx.restore();
 
-      // Legs
-      ctx.fillStyle = '#fb7185';
-      ctx.beginPath(); ctx.roundRect(-12, 11, 8, 13, 4); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(4,   11, 8, 13, 4); ctx.fill();
-
-      // Arms
-      ctx.beginPath(); ctx.roundRect(-22, -1, 9, 11, 4); ctx.fill();
-      ctx.beginPath(); ctx.roundRect( 13, -1, 9, 11, 4); ctx.fill();
+      // Tail
+      ctx.strokeStyle = '#fb923c';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (isDrown) {
+        ctx.moveTo(12, 5); ctx.quadraticCurveTo(20, 15, 28, 12);
+      } else if (isJump) {
+        ctx.moveTo(10, 12); ctx.quadraticCurveTo(30, 10, 26, -10);
+      } else if (isFall) {
+        ctx.moveTo(10, -5); ctx.quadraticCurveTo(30, -15, 20, -25);
+      } else {
+        ctx.moveTo(12, 8); ctx.quadraticCurveTo(28, -5, 22, -18);
+      }
+      ctx.stroke();
 
       // Body
-      ctx.fillStyle = '#f43f5e';
-      ctx.beginPath(); ctx.roundRect(-18, -17, 36, 31, 13); ctx.fill();
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath(); ctx.ellipse(0, 5, R*0.75, R*0.6, 0, 0, Math.PI*2); ctx.fill();
 
-      // Eye white
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(0, -3, 9, 0, Math.PI*2); ctx.fill();
+      // Belly
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath(); ctx.ellipse(0, 8, R*0.45, R*0.4, 0, 0, Math.PI*2); ctx.fill();
 
-      // Pupil
-      ctx.fillStyle = '#be123c';
-      ctx.beginPath(); ctx.arc(0, -3, 5, 0, Math.PI*2); ctx.fill();
+      // Legs
+      ctx.fillStyle = '#f97316';
+      if (isJump) {
+        ctx.beginPath(); ctx.roundRect(-14, 12, 8, 14, 3); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(6, 12, 8, 14, 3); ctx.fill();
+      } else if (isFall) {
+        ctx.save(); ctx.rotate(-0.3);
+        ctx.beginPath(); ctx.roundRect(-16, 10, 8, 12, 3); ctx.fill();
+        ctx.restore();
+        ctx.save(); ctx.rotate(0.3);
+        ctx.beginPath(); ctx.roundRect(8, 10, 8, 12, 3); ctx.fill();
+        ctx.restore();
+      } else {
+        ctx.beginPath(); ctx.roundRect(-12, 14, 8, 10, 3); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(4, 14, 8, 10, 3); ctx.fill();
+        // Paws
+        ctx.fillStyle = '#fdba74';
+        ctx.beginPath(); ctx.ellipse(-8, 24, 5, 3, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(8, 24, 5, 3, 0, 0, Math.PI*2); ctx.fill();
+      }
 
-      // Highlight
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(-2.5, -5.5, 2.5, 0, Math.PI*2); ctx.fill();
+      // Head
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath(); ctx.arc(0, -8, R*0.7, 0, Math.PI*2); ctx.fill();
 
-      // Smile
-      ctx.strokeStyle = '#9f1239';
-      ctx.lineWidth = 2.5; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.arc(0, 6, 5, 0.1*Math.PI, 0.9*Math.PI); ctx.stroke();
+      // Ears
+      ctx.beginPath();
+      ctx.moveTo(-12, -18); ctx.lineTo(-6, -28); ctx.lineTo(0, -18);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, -18); ctx.lineTo(6, -28); ctx.lineTo(12, -18);
+      ctx.fill();
 
-      // Glass bubble
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(0,-2, R+5, 0, Math.PI*2); ctx.stroke();
+      // Inner ears
+      ctx.fillStyle = '#fda4af';
+      ctx.beginPath(); ctx.moveTo(-10, -18); ctx.lineTo(-6, -25); ctx.lineTo(-2, -18); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(2, -18); ctx.lineTo(6, -25); ctx.lineTo(10, -18); ctx.fill();
 
-      // Reflection sweep
-      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      // Face
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath(); ctx.ellipse(0, -4, R*0.5, R*0.35, 0, 0, Math.PI*2); ctx.fill();
+
+      // Stripes on forehead
+      ctx.strokeStyle = '#c2410c';
       ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(0,-2, R+2, -0.65*Math.PI, -0.2*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-4, -20); ctx.lineTo(-3, -15); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -22); ctx.lineTo(0, -16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(4, -20); ctx.lineTo(3, -15); ctx.stroke();
+
+      // Eyes
+      if (isDrown) {
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2; ctx.lineCap = 'round';
+        [-7, 7].forEach(ex => {
+          ctx.beginPath(); ctx.moveTo(ex-3, -10); ctx.lineTo(ex+3, -6); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(ex+3, -10); ctx.lineTo(ex-3, -6); ctx.stroke();
+        });
+      } else {
+        const ey = isJump ? -10 : -8;
+        const er = isJump ? 4 : 3.5;
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath(); ctx.ellipse(-7, ey, 3.5, er, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(7, ey, 3.5, er, 0, 0, Math.PI*2); ctx.fill();
+        // Eye highlights
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(-8.5, ey-1.5, 1.5, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(5.5, ey-1.5, 1.5, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Nose
+      ctx.fillStyle = '#fb7185';
+      ctx.beginPath(); ctx.moveTo(0, -4); ctx.lineTo(-2.5, -2); ctx.lineTo(2.5, -2); ctx.closePath(); ctx.fill();
+
+      // Mouth
+      if (isDrown) {
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(0, 2, 4, 0.2*Math.PI, 0.8*Math.PI); ctx.stroke();
+      } else if (isJump) {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath(); ctx.ellipse(0, 0, 3.5, 2.5, 0, 0, Math.PI*2); ctx.fill();
+      } else {
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(0, -1, 4, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke();
+      }
+
+      // Whiskers
+      ctx.strokeStyle = '#92400e'; ctx.lineWidth = 1; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(-12, -4); ctx.lineTo(-22, -7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-12, -2); ctx.lineTo(-22, -2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(-22, 3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, -4); ctx.lineTo(22, -7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, -2); ctx.lineTo(22, -2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(22, 3); ctx.stroke();
+
+      // Drowning bubbles
+      if (isDrown) {
+        ctx.fillStyle = 'rgba(186,230,253,0.6)';
+        ctx.beginPath(); ctx.arc(-8, -22, 3, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-4, -28, 2, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(6, -25, 2.5, 0, Math.PI*2); ctx.fill();
+      }
     }
 
     ctx.restore();

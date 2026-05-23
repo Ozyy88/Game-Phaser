@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Water Hop - Premium Asset Exporter Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --primary: #f97316; /* Orange Cat Theme */
+      --primary-hover: #ea580c;
+      --cyan: #06b6d4;
+      --cyan-hover: #0891b2;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      padding: 6px 16px;
+      border-radius: 100px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, #f43f5e 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .steps-container {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 40px;
+      box-shadow: var(--glass-shadow);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      animation: fadeIn 1s ease;
+    }
+
+    .step-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      background: linear-gradient(135deg, var(--primary), #f43f5e);
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+
+    .step-info h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-light);
+    }
+
+    .step-info p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .step-info code {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: var(--primary);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+      width: 100%;
+      animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .asset-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--glass-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asset-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(249, 115, 22, 0.3);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.1);
+    }
+
+    .asset-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--cyan));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .asset-card:hover::after {
+      opacity: 1;
+    }
+
+    .preview-box {
+      width: 100%;
+      height: 140px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      position: relative;
+    }
+
+    .preview-box.trans {
+      background-image: 
+        linear-gradient(45deg, #111827 25%, transparent 25%), 
+        linear-gradient(-45deg, #111827 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #111827 75%), 
+        linear-gradient(-45deg, transparent 75%, #111827 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+
+    .preview-box canvas {
+      display: block;
+      max-width: 90%;
+      max-height: 90%;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+      image-rendering: pixelated;
+    }
+
+    .asset-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-light);
+    }
+
+    .asset-filename {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-family: monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+      filter: brightness(1.1);
+    }
+
+    .btn-download:active {
+      transform: translateY(0);
+    }
+
+    .btn-download.sky {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-hover) 100%);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .btn-download.sky:hover {
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo-badge">🎨 Asset Suite V2</div>
+      <h1>Premium Asset Exporter</h1>
+      <p class="subtitle">Eksportir Aset Gambar Kucing, Pelampung, & Latar Belakang untuk Menyempurnakan Visual Water Hop Anda secara Otomatis</p>
+    </header>
+
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <h3>Klik Tombol Unduh</h3>
+          <p>Klik tombol unduh pada setiap kartu di bawah untuk menyimpan gambar dalam format PNG transparan berkualitas tinggi.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <h3>Simpan ke Folder <code>assets/</code></h3>
+          <p>Pastikan untuk menyimpan berkas PNG tersebut langsung ke dalam direktori proyek Anda di dalam folder <code>assets/</code>.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <h3>Jalankan & Mainkan Game!</h3>
+          <p>Setelah berkas diletakkan di sana, game akan otomatis memuat file PNG tersebut menggantikan gambar fallback canvas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" id="assetGrid"></div>
+  </div>
+
+  <footer>
+    <p>Water Hop Studio © 2026 • Premium Design and Experience</p>
+  </footer>
+
+  <script>
+    const grid = document.getElementById('assetGrid');
+
+    function makeCanvas(w, h) {
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      return c;
+    }
+
+    function createAssetCard(title, filename, canvas, isBg = false) {
+      const card = document.createElement('div');
+      card.className = 'asset-card';
+
+      const preview = document.createElement('div');
+      preview.className = 'preview-box' + (!isBg ? ' trans' : '');
+      preview.appendChild(canvas);
+
+      const titleEl = document.createElement('h4');
+      titleEl.className = 'asset-title';
+      titleEl.textContent = title;
+
+      const fileEl = document.createElement('span');
+      fileEl.className = 'asset-filename';
+      fileEl.textContent = filename;
+
+      const dl = document.createElement('a');
+      dl.className = 'btn-download' + (isBg ? ' sky' : '');
+      dl.href = canvas.toDataURL('image/png');
+      dl.download = filename;
+      dl.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download PNG
+      `;
+
+      card.appendChild(preview);
+      card.appendChild(titleEl);
+      card.appendChild(fileEl);
+      card.appendChild(dl);
+      grid.appendChild(card);
+    }
+
+    // ──── CAT DRAWING FUNCTION ────
+    function drawCat(ctx, cx, cy, r, state) {
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Tail
+      ctx.strokeStyle = '#fb923c';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (state === 'drown') {
+        ctx.moveTo(12, 5); ctx.quadraticCurveTo(20, 15, 28, 12);
+      } else if (state === 'jump') {
+        ctx.moveTo(10, 12); ctx.quadraticCurveTo(30, 10, 26, -10);
+      } else if (state === 'fall') {
+        ctx.moveTo(10, -5); ctx.quadraticCurveTo(30, -15, 20, -25);
+      } else {
+        ctx.moveTo(12, 8); ctx.quadraticCurveTo(28, -5, 22, -18);
+      }
+      ctx.stroke();
+
+      // Body
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath(); ctx.ellipse(0, 5, r*0.75, r*0.6, 0, 0, Math.PI*2); ctx.fill();
+
+      // Belly
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath(); ctx.ellipse(0, 8, r*0.45, r*0.4, 0, 0, Math.PI*2); ctx.fill();
+
+      // Legs
+      ctx.fillStyle = '#f97316';
+      if (state === 'jump') {
+        ctx.beginPath(); ctx.roundRect(-14, 12, 8, 14, 3); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(6, 12, 8, 14, 3); ctx.fill();
+      } else if (state === 'fall') {
+        ctx.save(); ctx.rotate(-0.3);
+        ctx.beginPath(); ctx.roundRect(-16, 10, 8, 12, 3); ctx.fill();
+        ctx.restore();
+        ctx.save(); ctx.rotate(0.3);
+        ctx.beginPath(); ctx.roundRect(8, 10, 8, 12, 3); ctx.fill();
+        ctx.restore();
+      } else {
+        ctx.beginPath(); ctx.roundRect(-12, 14, 8, 10, 3); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(4, 14, 8, 10, 3); ctx.fill();
+        // Paws
+        ctx.fillStyle = '#fdba74';
+        ctx.beginPath(); ctx.ellipse(-8, 24, 5, 3, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(8, 24, 5, 3, 0, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Head
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath(); ctx.arc(0, -8, r*0.7, 0, Math.PI*2); ctx.fill();
+
+      // Ears
+      ctx.beginPath();
+      ctx.moveTo(-12, -18); ctx.lineTo(-6, -28); ctx.lineTo(0, -18);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, -18); ctx.lineTo(6, -28); ctx.lineTo(12, -18);
+      ctx.fill();
+
+      // Inner ears
+      ctx.fillStyle = '#fda4af';
+      ctx.beginPath(); ctx.moveTo(-10, -18); ctx.lineTo(-6, -25); ctx.lineTo(-2, -18); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(2, -18); ctx.lineTo(6, -25); ctx.lineTo(10, -18); ctx.fill();
+
+      // Face
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath(); ctx.ellipse(0, -4, r*0.5, r*0.35, 0, 0, Math.PI*2); ctx.fill();
+
+      // Stripes on forehead
+      ctx.strokeStyle = '#c2410c';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-4, -20); ctx.lineTo(-3, -15); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -22); ctx.lineTo(0, -16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(4, -20); ctx.lineTo(3, -15); ctx.stroke();
+
+      // Eyes
+      if (state === 'drown') {
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2; ctx.lineCap = 'round';
+        [-7, 7].forEach(ex => {
+          ctx.beginPath(); ctx.moveTo(ex-3, -10); ctx.lineTo(ex+3, -6); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(ex+3, -10); ctx.lineTo(ex-3, -6); ctx.stroke();
+        });
+      } else {
+        const ey = state === 'jump' ? -10 : -8;
+        const er = state === 'jump' ? 4 : 3.5;
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath(); ctx.ellipse(-7, ey, 3.5, er, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(7, ey, 3.5, er, 0, 0, Math.PI*2); ctx.fill();
+        // Eye highlights
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(-8.5, ey-1.5, 1.5, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(5.5, ey-1.5, 1.5, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Nose
+      ctx.fillStyle = '#fb7185';
+      ctx.beginPath(); ctx.moveTo(0, -4); ctx.lineTo(-2.5, -2); ctx.lineTo(2.5, -2); ctx.closePath(); ctx.fill();
+
+      // Mouth
+      if (state === 'drown') {
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(0, 2, 4, 0.2*Math.PI, 0.8*Math.PI); ctx.stroke();
+      } else if (state === 'jump') {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath(); ctx.ellipse(0, 0, 3.5, 2.5, 0, 0, Math.PI*2); ctx.fill();
+      } else {
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(0, -1, 4, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke();
+      }
+
+      // Whiskers
+      ctx.strokeStyle = '#92400e'; ctx.lineWidth = 1; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(-12, -4); ctx.lineTo(-22, -7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-12, -2); ctx.lineTo(-22, -2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(-22, 3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, -4); ctx.lineTo(22, -7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, -2); ctx.lineTo(22, -2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(22, 3); ctx.stroke();
+
+      // Drowning bubbles
+      if (state === 'drown') {
+        ctx.fillStyle = 'rgba(186,230,253,0.6)';
+        ctx.beginPath(); ctx.arc(-8, -22, 3, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-4, -28, 2, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(6, -25, 2.5, 0, Math.PI*2); ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // 1. Generate Character States
+    const catStates = [
+      { id: 'idle', name: 'Kucing Diam', file: 'character_idle.png' },
+      { id: 'jump', name: 'Kucing Lompat', file: 'character_jump.png' },
+      { id: 'fall', name: 'Kucing Jatuh', file: 'character_fall.png' },
+      { id: 'drown', name: 'Kucing Tenggelam', file: 'character_drown.png' }
+    ];
+
+    catStates.forEach(s => {
+      const c = makeCanvas(64, 64);
+      const ctx = c.getContext('2d');
+      drawCat(ctx, 32, 32, 20, s.id);
+      createAssetCard(s.name, s.file, c);
+    });
+
+    // 2. Generate Swim Ring Platform
+    {
+      const c = makeCanvas(120, 40);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = 'rgba(0, 40, 80, 0.15)';
+      ctx.beginPath(); ctx.ellipse(60, 26, 58, 12, 0, 0, Math.PI*2); ctx.fill();
+
+      // Outer yellow body
+      ctx.fillStyle = '#fde047'; ctx.strokeStyle = '#eab308'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(60, 20, 54, 15, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+      // Inner Hole
+      ctx.fillStyle = '#ca8a04'; ctx.strokeStyle = '#a16207'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.ellipse(60, 21, 30, 6, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+      // Curved segments texture
+      ctx.strokeStyle = 'rgba(234, 179, 8, 0.5)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(25, 12); ctx.quadraticCurveTo(15, 20, 25, 28); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(95, 12); ctx.quadraticCurveTo(105, 20, 95, 28); ctx.stroke();
+
+      createAssetCard('Pelampung Kuning', 'platform.png', c);
+    }
+
+    // 3. Generate Gold Coin
+    {
+      const c = makeCanvas(32, 32);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath(); ctx.arc(16, 16, 14, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath(); ctx.arc(16, 16, 12, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#b45309'; ctx.font = 'bold 15px Outfit'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('$', 16, 17);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.beginPath(); ctx.arc(19, 13, 3, 0, Math.PI*2); ctx.fill();
+
+      createAssetCard('Koin Emas', 'coin.png', c);
+    }
+
+    // 3.5. Generate Time Booster (Clock)
+    {
+      const c = makeCanvas(32, 32);
+      const ctx = c.getContext('2d');
+      const cx = 16, cy = 16;
+
+      // Outer cyan rim
+      ctx.fillStyle = '#0891b2';
+      ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI*2); ctx.fill();
+
+      // Face
+      ctx.fillStyle = '#e0f7fa';
+      ctx.beginPath(); ctx.arc(cx, cy, 11, 0, Math.PI*2); ctx.fill();
+
+      // Hands
+      ctx.strokeStyle = '#0e7490';
+      ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 6);
+      ctx.moveTo(cx, cy); ctx.lineTo(cx + 5, cy + 2);
+      ctx.stroke();
+
+      // Ringing ears
+      ctx.fillStyle = '#06b6d4';
+      ctx.beginPath(); ctx.arc(cx - 9, cy - 9, 3.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 9, cy - 9, 3.5, 0, Math.PI*2); ctx.fill();
+
+      createAssetCard('Penambah Waktu', 'time.png', c);
+    }
+
+    // 4. Generate Background Sky
+    {
+      const c = makeCanvas(480, 400);
+      const ctx = c.getContext('2d');
+      const sky = ctx.createLinearGradient(0, 0, 0, 400);
+      sky.addColorStop(0, '#c8eeff');
+      sky.addColorStop(1, '#a8dcf0');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, 480, 400);
+
+      // Clouds
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      [[60, 50, 20], [200, 30, 25], [350, 70, 18], [420, 40, 22]].forEach(([x, y, r]) => {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.arc(x + r * 1.1, y - 8, r * 1.3, 0, Math.PI*2);
+        ctx.arc(x + r * 2.2, y, r, 0, Math.PI*2);
+        ctx.fill();
+      });
+
+      createAssetCard('Latar Belakang Langit', 'bg_sky.png', c, true);
+    }
+
+    // 5. Generate Background Hills
+    {
+      const c = makeCanvas(480, 200);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = 'rgba(167,220,242,0.45)';
+      [50, 250, 430].forEach(x => {
+        ctx.beginPath(); ctx.arc(x, 150, 180, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.fillStyle = 'rgba(140,210,235,0.35)';
+      [150, 350].forEach(x => {
+        ctx.beginPath(); ctx.arc(x, 160, 140, 0, Math.PI*2); ctx.fill();
+      });
+
+      createAssetCard('Latar Belakang Bukit', 'bg_hills.png', c, true);
+    }
+  </script>
+</body>
+</html>
