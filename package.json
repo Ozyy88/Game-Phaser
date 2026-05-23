@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dev": "npx -y http-server . -o"
+  },
+  "dependencies": {
+    "phaser": "^4.1.0"
+  }
+}

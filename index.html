@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Water Hop - Petualangan Menyeberang Air</title>
+  <meta name="description" content="Lompati setiap pijakan dengan presisi, kumpulkan koin emas, dan jangan sampai tenggelam! Game melompat seru dan adiktif.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="game-container" id="gameContainer">
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+
+
+    <!-- UI Overlay (Scoreboards, Buttons, etc) -->
+    <div class="ui-overlay">
+      <!-- Top Bar: Score & Audio Toggle -->
+      <div class="top-bar">
+        <div class="top-bar-badges">
+          <!-- Score Badge -->
+          <div class="score-badge" id="scoreBadge">
+            <span class="label">Skor</span>
+            <span class="value" id="currentScoreVal">0</span>
+          </div>
+
+          <!-- Coins Badge -->
+          <div class="score-badge coin-badge" id="coinBadge">
+            <span class="label">🪙 Koin</span>
+            <span class="value" id="currentCoinsVal">0</span>
+          </div>
+
+          <!-- Timer Badge -->
+          <div class="score-badge timer-badge" id="timerBadge">
+            <span class="label">⏱ Waktu</span>
+            <span class="value" id="currentTimerVal">30</span>
+          </div>
+        </div>
+
+        <!-- Audio Toggle Button -->
+        <button class="audio-btn" id="audioToggleBtn" title="Toggle Sound">🔊</button>
+      </div>
+
+      <!-- Bottom instruction (Shows temporarily when playing) -->
+      <div style="display: flex; justify-content: center; width: 100%; pointer-events: none;">
+        <div class="instructions" id="gameplayHint" style="opacity: 0; transition: opacity 0.3s ease; text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 0.8rem; background: rgba(15, 23, 42, 0.8);">
+          <strong>Klik / Tap</strong> tepat pada pijakan untuk melompat!
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Menu Screen -->
+    <div class="screen active" id="mainMenuScreen">
+      <!-- Background Decorators -->
+      <div class="screen-bg-decorations">
+        <div class="decor-cloud-1"></div>
+        <div class="decor-cloud-2"></div>
+        <div class="decor-hill decor-hill-1"></div>
+        <div class="decor-hill decor-hill-2"></div>
+        <div class="decor-wave decor-wave-1"></div>
+        <div class="decor-wave decor-wave-2"></div>
+      </div>
+
+      <div class="logo-container">
+        <div class="logo-main">Water Hop</div>
+        <div class="logo-sub">Petualangan Sungai</div>
+      </div>
+
+      <button class="btn" id="playBtn">MULAI MAIN</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="screen" id="gameOverScreen">
+      <!-- Background Decorators -->
+      <div class="screen-bg-decorations">
+        <div class="decor-cloud-1"></div>
+        <div class="decor-cloud-2"></div>
+        <div class="decor-hill decor-hill-1"></div>
+        <div class="decor-hill decor-hill-2"></div>
+        <div class="decor-wave decor-wave-1"></div>
+        <div class="decor-wave decor-wave-2"></div>
+      </div>
+
+      <div class="logo-container" style="margin-bottom: 24px;">
+        <div class="logo-main" id="gameOverTitle" style="color: #ef4444; background: none; -webkit-text-fill-color: initial;">BASAH KUYUP!</div>
+        <div class="logo-sub" id="gameOverSub">Kamu tenggelam di sungai</div>
+      </div>
+
+      <div class="stats-panel">
+        <div class="stat-row" style="border-bottom: 1px solid rgba(2, 132, 199, 0.15); padding-bottom: 12px; margin-bottom: 4px;">
+          <span class="stat-label" style="color: #ca8a04; font-weight: 800; font-size: 1.05rem;">🏆 Skor Terbaik</span>
+          <span class="stat-value" id="bestScoreVal" style="color: #ca8a04; font-size: 1.5rem; font-weight: 800;">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Skor Game</span>
+          <span class="stat-value score" id="finalScoreVal">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Koin Terkumpul</span>
+          <span class="stat-value coin" id="finalCoinsVal">0</span>
+        </div>
+      </div>
+
+      <button class="btn" id="restartBtn">MAIN LAGI</button>
+    </div>
+  </div>
+
+  <!-- Game Logic Script -->
+  <script src="game.js"></script>
+</body>
+</html>
