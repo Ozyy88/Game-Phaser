@@ -18,13 +18,43 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
   };
 }
 
-// ─── Sound Manager ──────────────────────────────────────────────────────────
+// ─── Sound Manager (with audio file support + procedural fallback) ───────────
 class SoundManager {
   constructor() {
     this.actx = null;
     this.muted = false;
     this.bgmTimer = null;
     this.bgmPlaying = false;
+    this.audioFiles = {};
+    this._preloadAudioFiles();
+  }
+
+  _preloadAudioFiles() {
+    const audioSrc = {
+      jump:     'assets/audio/jump.mp3',
+      coin:     'assets/audio/coin.mp3',
+      splash:   'assets/audio/splash.mp3',
+      gameover: 'assets/audio/gameover.mp3',
+      bgm:      'assets/audio/bgm.mp3'
+    };
+    Object.entries(audioSrc).forEach(([key, path]) => {
+      const audio = new Audio();
+      audio.src = path;
+      audio.preload = 'auto';
+      audio.addEventListener('canplaythrough', () => { this.audioFiles[key] = audio; });
+      audio.addEventListener('error', () => { this.audioFiles[key] = null; });
+    });
+  }
+
+  _playFile(key, volume = 0.5) {
+    const file = this.audioFiles[key];
+    if (file && !this.muted) {
+      const clone = file.cloneNode();
+      clone.volume = volume;
+      clone.play().catch(() => {});
+      return true;
+    }
+    return false;
   }
 
   _init() {
@@ -55,11 +85,23 @@ class SoundManager {
     o.start(); o.stop(t + dur + 0.01);
   }
 
-  playJump()     { this._init(); this._resume(); this._beep('triangle', 150, 600, 0.15, 0.15); }
-  playCoin()     { this._init(); this._resume(); this._beep('sine', 587, 880, 0.25, 0.12); }
-  playGameOver() { this._init(); this._resume(); [220,196,174].forEach((f,i)=>setTimeout(()=>this._beep('sawtooth',f,null,0.25,0.08),i*120)); }
+  playJump() {
+    if (this._playFile('jump', 0.4)) return;
+    this._init(); this._resume(); this._beep('triangle', 150, 600, 0.15, 0.15);
+  }
+
+  playCoin() {
+    if (this._playFile('coin', 0.35)) return;
+    this._init(); this._resume(); this._beep('sine', 587, 880, 0.25, 0.12);
+  }
+
+  playGameOver() {
+    if (this._playFile('gameover', 0.5)) return;
+    this._init(); this._resume(); [220,196,174].forEach((f,i)=>setTimeout(()=>this._beep('sawtooth',f,null,0.25,0.08),i*120));
+  }
 
   playSplash() {
+    if (this._playFile('splash', 0.5)) return;
     this._init(); this._resume();
     if (!this.actx || this.muted) return;
     const t = this.actx.currentTime;
@@ -76,6 +118,19 @@ class SoundManager {
 
   playBGM() {
     if (this.muted || this.bgmPlaying) return;
+    // Try file-based BGM first
+    const bgmFile = this.audioFiles['bgm'];
+    if (bgmFile) {
+      this.bgmPlaying = true;
+      bgmFile.loop = true;
+      bgmFile.volume = 0.2;
+      bgmFile.play().catch(() => { this._playProceduralBGM(); });
+      return;
+    }
+    this._playProceduralBGM();
+  }
+
+  _playProceduralBGM() {
     this._init(); this._resume();
     if (!this.actx) return;
     this.bgmPlaying = true;
@@ -93,8 +148,14 @@ class SoundManager {
     tick();
   }
 
-  stopBGM() { clearTimeout(this.bgmTimer); this.bgmPlaying = false; }
+  stopBGM() {
+    clearTimeout(this.bgmTimer);
+    this.bgmPlaying = false;
+    const bgmFile = this.audioFiles['bgm'];
+    if (bgmFile) { bgmFile.pause(); bgmFile.currentTime = 0; }
+  }
 }
+
 
 // ─── Particle System ─────────────────────────────────────────────────────────
 class Particle {
@@ -164,15 +225,15 @@ class AssetLoader {
   constructor() {
     this.imgs = {};
     const src = {
-      character_idle: 'assets/character_idle.png',
-      character_jump: 'assets/character_jump.png',
-      character_fall: 'assets/character_fall.png',
-      character_drown:'assets/character_drown.png',
-      platform:       'assets/platform.png',
-      coin:           'assets/coin.png',
-      time:           'assets/time.png',
-      bg_sky:         'assets/bg_sky.png',
-      bg_hills:       'assets/bg_hills.png'
+      character_idle: 'assets/asetgame/character_idle.png',
+      character_jump: 'assets/asetgame/character_jump.png',
+      character_fall: 'assets/asetgame/character_fall.png',
+      character_drown:'assets/asetgame/character_drown.png',
+      platform:       'assets/asetgame/platform.png',
+      coin:           'assets/asetgame/coin.png',
+      time:           'assets/asetgame/time.png',
+      bg_sky:         'assets/asetgame/bg_sky.png',
+      bg_hills:       'assets/asetgame/bg_hills.png'
     };
     Object.entries(src).forEach(([k,v]) => {
       const img = new Image(); img.src = v;
@@ -207,7 +268,6 @@ class WaterHopGame {
     this.finalScoreVal   = document.getElementById('finalScoreVal');
     this.finalCoinsVal   = document.getElementById('finalCoinsVal');
     this.bestScoreVal    = document.getElementById('bestScoreVal');
-    this.gameplayHint    = document.getElementById('gameplayHint');
 
     // Constants
     this.GRAVITY   = 0.5;
@@ -329,9 +389,8 @@ class WaterHopGame {
     this.platforms.push(p0);
     this.currentPlatform = p0;
 
-    // Generate two ahead
+    // Generate one ahead (fixes overlapping bug)
     const p1 = this._spawnNext(p0);
-    const p2 = this._spawnNext(p1);
     this.nextPlatform = p1;
 
     // Place player on center of first platform
@@ -342,12 +401,6 @@ class WaterHopGame {
     this.player.rot = 0;
 
     this.state = 'PLAYING';
-
-    // Brief hint
-    if (this.gameplayHint) {
-      this.gameplayHint.style.opacity = '1';
-      setTimeout(() => { this.gameplayHint.style.opacity = '0'; }, 3500);
-    }
   }
 
   _updateTimerUI() {
@@ -386,8 +439,8 @@ class WaterHopGame {
       }
     }
 
-    // Keep platform pool tidy (only keep last 8)
-    if (this.platforms.length > 8) this.platforms.shift();
+    // Keep platform pool tidy (only keep last 6 to prevent duplication)
+    while (this.platforms.length > 6) this.platforms.shift();
     return plat;
   }
 
@@ -495,11 +548,11 @@ class WaterHopGame {
 
           if (c.type === 'time') {
             // Clock collected (Adds only time!)
-            this.timeLeft = Math.min(this.timeLeft + 8, 50);
+            this.timeLeft = Math.min(this.timeLeft + 5, 50);
             this._updateTimerUI();
             sfx.playCoin();
             particles.spawn(c.x, coinY, 'sparkle', 12, 'cyan');
-            particles.spawn(c.x, coinY - 15, 'text', 1, '+8 Detik');
+            particles.spawn(c.x, coinY - 15, 'text', 1, '+5 Detik');
           } else {
             // Gold coin collected (Adds score & coin count, NO time!)
             this.coins++;
@@ -668,48 +721,44 @@ class WaterHopGame {
     const top = this.GROUND - this.PLAT_H;
     const centerY = top + this.PLAT_H / 2;
     const rx = p.width / 2;
-    const ry = this.PLAT_H * 0.8; // oval height radius
+    const ry = this.PLAT_H * 0.8;
 
-    // 1. Water shadow below the tube
+    // 1. Water shadow below
     ctx.fillStyle = 'rgba(0, 40, 80, 0.15)';
     ctx.beginPath();
     ctx.ellipse(p.x, centerY + 8, rx + 4, ry, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 2. Main inflatable body (Outer Yellow Oval)
-    ctx.fillStyle = '#fde047'; // Bright yellow
-    ctx.strokeStyle = '#eab308'; // Golden yellow border
+    // 2. Main body — single solid swim ring
+    ctx.fillStyle = '#fde047';
+    ctx.strokeStyle = '#eab308';
     ctx.lineWidth = 3.5;
     ctx.beginPath();
     ctx.ellipse(p.x, centerY, rx, ry, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // 3. Inner Hole of the swim ring (Darker Yellow / Water recess)
-    ctx.fillStyle = '#ca8a04'; // Dark golden yellow representing the recessed inside of the float
-    ctx.strokeStyle = '#a16207'; // Border
-    ctx.lineWidth = 2.5;
+    // 3. Highlight shine on top
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.beginPath();
-    ctx.ellipse(p.x, centerY + 1, rx * 0.55, ry * 0.45, 0, 0, Math.PI * 2);
+    ctx.ellipse(p.x, centerY - ry * 0.2, rx * 0.75, ry * 0.35, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.stroke();
 
-    // 4. Subtle lines/texture of the inflatable tube sections (vertical quadratic curves)
-    ctx.strokeStyle = 'rgba(234, 179, 8, 0.45)';
-    ctx.lineWidth = 2.5;
-    
-    // Left segment curved line (on the fat left part of the ring)
+    // 4. Subtle segment lines
+    ctx.strokeStyle = 'rgba(234, 179, 8, 0.35)';
+    ctx.lineWidth = 2;
+
     ctx.beginPath();
     ctx.moveTo(p.x - rx * 0.7, centerY - ry * 0.6);
     ctx.quadraticCurveTo(p.x - rx * 0.85, centerY, p.x - rx * 0.7, centerY + ry * 0.6);
     ctx.stroke();
 
-    // Right segment curved line (on the fat right part of the ring)
     ctx.beginPath();
     ctx.moveTo(p.x + rx * 0.7, centerY - ry * 0.6);
     ctx.quadraticCurveTo(p.x + rx * 0.85, centerY, p.x + rx * 0.7, centerY + ry * 0.6);
     ctx.stroke();
   }
+
 
   _drawCollectible(c, y) {
     const ctx = this.ctx;
