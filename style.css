@@ -103,7 +103,7 @@ body::before {
 }
 
 .top-bar-badges {
-  display: flex;
+  display: none;
   gap: 8px;
   flex-wrap: wrap;
   max-width: 82%;

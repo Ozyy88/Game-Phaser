@@ -262,6 +262,7 @@ class WaterHopGame {
     this.mainMenuScreen  = document.getElementById('mainMenuScreen');
     this.gameOverScreen  = document.getElementById('gameOverScreen');
     this.audioToggleBtn  = document.getElementById('audioToggleBtn');
+    this.topBarBadges    = document.querySelector('.top-bar-badges');
     this.currentScoreVal = document.getElementById('currentScoreVal');
     this.currentCoinsVal = document.getElementById('currentCoinsVal');
     this.currentTimerVal = document.getElementById('currentTimerVal');
@@ -368,6 +369,7 @@ class WaterHopGame {
 
     this.mainMenuScreen.classList.remove('active');
     this.gameOverScreen.classList.remove('active');
+    this.topBarBadges.style.display = 'flex';
 
     this.score  = 0;
     this.coins  = 0;
@@ -498,6 +500,7 @@ class WaterHopGame {
     }
 
     this.gameOverScreen.classList.add('active');
+    this.topBarBadges.style.display = 'none';
   }
 
   // ── Update ────────────────────────────────────────────────────────────────
