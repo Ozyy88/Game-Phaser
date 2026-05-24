@@ -90,7 +90,7 @@ body::before {
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
-  z-index: 10;
+  z-index: 25;
 }
 
 /* Top bar: Score, High Score, Audio */
@@ -231,6 +231,7 @@ body::before {
 
 /* Logo animation */
 .logo-container {
+  margin-top: -45px;
   margin-bottom: 24px;
   animation: float 4s ease-in-out infinite;
   z-index: 2;
