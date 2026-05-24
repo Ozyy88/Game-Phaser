@@ -245,6 +245,7 @@ body::before {
   margin-bottom: 24px;
   animation: float 4s ease-in-out infinite;
   z-index: 2;
+  will-change: transform; /* Promotes to GPU layer for 60fps animation */
 }
 
 .logo-img {
@@ -255,7 +256,6 @@ body::before {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  filter: drop-shadow(0 4px 12px rgba(2, 132, 199, 0.3));
 }
 
 .logo-main {
