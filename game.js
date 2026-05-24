@@ -360,6 +360,16 @@ class WaterHopGame {
       this.targetTimer = 1.0;
       this._doJump(dist);
     });
+
+    // Start BGM on first interaction (unblocks Web Audio API autoplay restriction)
+    const initBGM = () => {
+      sfx._init();
+      sfx.playBGM();
+      window.removeEventListener('pointerdown', initBGM);
+      window.removeEventListener('keydown', initBGM);
+    };
+    window.addEventListener('pointerdown', initBGM);
+    window.addEventListener('keydown', initBGM);
   }
 
   // ── Start Game ───────────────────────────────────────────────────────────
