@@ -58,8 +58,14 @@ class SoundManager {
   }
 
   _init() {
-    if (this.actx) return;
-    try { this.actx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    if (this.actx) {
+      this._resume();
+      return;
+    }
+    try {
+      this.actx = new (window.AudioContext || window.webkitAudioContext)();
+      this._resume();
+    } catch(e) {}
   }
 
   _resume() { if (this.actx && this.actx.state === 'suspended') this.actx.resume(); }
@@ -317,20 +323,41 @@ class WaterHopGame {
     this.GROUND = this.H * 0.70; // Y where platforms sit
   }
 
-  // ── Input ─────────────────────────────────────────────────────────────────
   _bindInput() {
+    // Helper to initialize and play BGM on first interaction
+    const triggerAudioUnlock = () => {
+      sfx._init();
+      sfx.playBGM();
+      window.removeEventListener('click', triggerAudioUnlock);
+      window.removeEventListener('keydown', triggerAudioUnlock);
+    };
+    window.addEventListener('click', triggerAudioUnlock);
+    window.addEventListener('keydown', triggerAudioUnlock);
+
     // Buttons — stop propagation so click doesn't reach game canvas
-    this.playBtn.addEventListener('click', e => { e.stopPropagation(); this.startGame(); });
-    this.restartBtn.addEventListener('click', e => { e.stopPropagation(); this.startGame(); });
+    this.playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      triggerAudioUnlock();
+      this.startGame();
+    });
+    this.restartBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      triggerAudioUnlock();
+      this.startGame();
+    });
     this.audioToggleBtn.addEventListener('click', e => {
       e.stopPropagation();
+      sfx._init();
       const m = sfx.toggleMute();
       this.audioToggleBtn.textContent = m ? '🔇' : '🔊';
+      // Clean up window listeners since audio is already initialized
+      window.removeEventListener('click', triggerAudioUnlock);
+      window.removeEventListener('keydown', triggerAudioUnlock);
     });
 
     // Game click/tap — on window, ignore if over a button or screen overlay
     const onTap = (clientX, clientY) => {
-      sfx._init(); sfx._resume(); // unlock audio on first interaction
+      sfx._init(); // unlock audio on first interaction
       if (this.state !== 'PLAYING') return;
 
       const rect = this.canvas.getBoundingClientRect();
@@ -360,16 +387,6 @@ class WaterHopGame {
       this.targetTimer = 1.0;
       this._doJump(dist);
     });
-
-    // Start BGM on first interaction (unblocks Web Audio API autoplay restriction)
-    const initBGM = () => {
-      sfx._init();
-      sfx.playBGM();
-      window.removeEventListener('pointerdown', initBGM);
-      window.removeEventListener('keydown', initBGM);
-    };
-    window.addEventListener('pointerdown', initBGM);
-    window.addEventListener('keydown', initBGM);
   }
 
   // ── Start Game ───────────────────────────────────────────────────────────
