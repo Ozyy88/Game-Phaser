@@ -517,7 +517,7 @@ class WaterHopGame {
         titleEl.textContent = "REKOR BARU! 🏆";
         titleEl.style.color = "#fbbf24"; // Gold color
         titleEl.style.webkitTextFillColor = "#fbbf24";
-        subEl.textContent = "Selamat! Kamu mencetak skor terbaik baru.";
+        subEl.textContent = "Selamat! Kamu mencetak High Score baru.";
       } else {
         titleEl.textContent = "BASAH KUYUP!";
         titleEl.style.color = "#ef4444"; // Red color
