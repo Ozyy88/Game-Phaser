@@ -494,7 +494,7 @@ class WaterHopGame {
   }
 
   // ── Game Over ─────────────────────────────────────────────────────────────
-  _gameOver() {
+  _gameOver(reason) {
     this.state = 'GAMEOVER';
     sfx.stopBGM();
     sfx.playGameOver();
@@ -519,10 +519,17 @@ class WaterHopGame {
         titleEl.style.webkitTextFillColor = "#fbbf24";
         subEl.textContent = "Selamat! Kamu mencetak High Score baru.";
       } else {
-        titleEl.textContent = "BASAH KUYUP!";
-        titleEl.style.color = "#ef4444"; // Red color
-        titleEl.style.webkitTextFillColor = "#ef4444";
-        subEl.textContent = "Kamu tenggelam di sungai";
+        if (reason === 'timeout') {
+          titleEl.textContent = "GAME OVER";
+          titleEl.style.color = "#ef4444"; // Red color
+          titleEl.style.webkitTextFillColor = "#ef4444";
+          subEl.textContent = "Waktu kamu telah habis!";
+        } else {
+          titleEl.textContent = "BASAH KUYUP!";
+          titleEl.style.color = "#ef4444"; // Red color
+          titleEl.style.webkitTextFillColor = "#ef4444";
+          subEl.textContent = "Kamu tenggelam di sungai";
+        }
       }
     }
 
@@ -547,7 +554,7 @@ class WaterHopGame {
         if (this.timeLeft <= 0) {
           this.timeLeft = 0;
           this._updateTimerUI();
-          this._gameOver();
+          this._gameOver('timeout');
         } else {
           this._updateTimerUI();
         }
